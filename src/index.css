@@ -1,0 +1,365 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Refined custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Digital grid pattern background */
+.bg-app-pattern {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Card glass panel effect */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.8);
+}
+
+/* Table zebra striping */
+.table-row-stripe:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.table-row-stripe:hover {
+  background-color: #f1f5f9;
+}
+
+/* Print / PDF Export Utility Classes */
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 10mm;
+    size: auto;
+  }
+
+  /* Hide non-printable navigation, app headers/footers, setup panels, and interactive buttons */
+  header,
+  footer,
+  nav,
+  button,
+  select,
+  input,
+  .no-print,
+  .interactive-only {
+    display: none !important;
+  }
+
+  body,
+  main,
+  div,
+  h1, h2, h3, h4, h5, h6,
+  p, span, table, th, td {
+    background-color: transparent !important;
+    color: #0f172a !important;
+  }
+
+  .bg-white,
+  .bg-slate-50,
+  .bg-slate-100,
+  .bg-slate-900,
+  .bg-slate-950,
+  .chart-card-print,
+  .print-only {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  /* Force chart text / axis ticks to dark text in print */
+  .recharts-text,
+  .recharts-cartesian-axis-tick-value,
+  .recharts-pie-label-text {
+    fill: #0f172a !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Prevent chart cards, Recharts SVGs, pie sectors, and labels from splitting across pages */
+  .print-avoid-break,
+  .chart-card-print,
+  .recharts-wrapper,
+  .recharts-surface,
+  .recharts-pie,
+  .recharts-pie-sector,
+  .recharts-pie-label-line,
+  .recharts-pie-labels,
+  svg {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
+    overflow: visible !important;
+  }
+
+  .chart-card-print {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid-page !important;
+    min-height: 330px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: visible !important;
+  }
+
+  /* Table layout for print: allow table flow across pages, prevent row breaks, repeat headers */
+  table {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    width: 100% !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+    break-inside: avoid !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Force background colors, SVG text, and graphics to render clearly in PDF */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Reset layout constraints for paper width */
+  .max-w-7xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* Landing Page Animations & Visual Utilities */
+@keyframes landingGlowPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.06); }
+}
+
+@keyframes landingFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes landingBarRise1 {
+  0%, 100% { height: 45%; }
+  50% { height: 85%; }
+}
+
+@keyframes landingBarRise2 {
+  0%, 100% { height: 75%; }
+  50% { height: 50%; }
+}
+
+@keyframes landingBarRise3 {
+  0%, 100% { height: 60%; }
+  50% { height: 95%; }
+}
+
+.animate-landing-glow {
+  animation: landingGlowPulse 6s ease-in-out infinite;
+}
+
+.animate-landing-float {
+  animation: landingFloat 5s ease-in-out infinite;
+}
+
+.animate-landing-float-delayed {
+  animation: landingFloat 6s ease-in-out infinite 2.5s;
+}
+
+.animate-bar-1 {
+  animation: landingBarRise1 4s ease-in-out infinite;
+}
+
+.animate-bar-2 {
+  animation: landingBarRise2 5s ease-in-out infinite 1s;
+}
+
+.animate-bar-3 {
+  animation: landingBarRise3 4.5s ease-in-out infinite 0.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-landing-glow,
+  .animate-landing-float,
+  .animate-landing-float-delayed,
+  .animate-bar-1,
+  .animate-bar-2,
+  .animate-bar-3 {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Custom Dashboard Motion & Micro-Interactions (Phase 28) */
+@keyframes dashboardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chipSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalContentScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes kpiEmphasizePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+  50% {
+    transform: scale(1.015);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.animate-dashboard-fade-up {
+  animation: dashboardFadeUp 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-stagger-1 { animation-delay: 0ms; }
+.animate-stagger-2 { animation-delay: 40ms; }
+.animate-stagger-3 { animation-delay: 80ms; }
+.animate-stagger-4 { animation-delay: 120ms; }
+
+.animate-chip-in {
+  animation: chipSlideIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-backdrop {
+  animation: modalBackdropFade 180ms ease-out forwards;
+}
+
+.animate-modal-content {
+  animation: modalContentScale 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-kpi-emphasis {
+  animation: kpiEmphasizePulse 300ms ease-out forwards;
+}
+
+/* Accordion Smooth Expand/Collapse */
+.accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.accordion-content.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.accordion-inner {
+  min-height: 0;
+}
+
+/* Reduced motion & Print rules override */
+@media (prefers-reduced-motion: reduce) {
+  .animate-dashboard-fade-up,
+  .animate-chip-in,
+  .animate-modal-backdrop,
+  .animate-modal-content,
+  .animate-kpi-emphasis,
+  .accordion-content {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .accordion-content {
+    grid-template-rows: 1fr !important;
+  }
+}
+
+@media print {
+  .animate-dashboard-fade-up,
+  .animate-chip-in,
+  .animate-modal-backdrop,
+  .animate-modal-content,
+  .animate-kpi-emphasis,
+  .accordion-content {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .accordion-content {
+    grid-template-rows: 1fr !important;
+  }
+}
+
+
