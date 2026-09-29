@@ -32,7 +32,7 @@ import {
 import { SAMPLE_DATASETS } from '../data/sampleDatasets';
 import CustomDashboard from './CustomDashboard';
 
-export default function DashboardScreen({ dataset, onChangeDataset, onBackToPreview, onSelectWorksheet }) {
+export default function DashboardScreen({ dataset, onChangeDataset, onBackToPreview, onSelectWorksheet, themeId, onThemeChange, activeTheme }) {
   const currentDataset = dataset || SAMPLE_DATASETS.ecommerce;
 
   // Filter States
@@ -66,6 +66,9 @@ export default function DashboardScreen({ dataset, onChangeDataset, onBackToPrev
           dataset={currentDataset} 
           onBackToPreview={onBackToPreview || (() => onChangeDataset(SAMPLE_DATASETS.ecommerce))} 
           onSelectWorksheet={onSelectWorksheet}
+          themeId={themeId}
+          onThemeChange={onThemeChange}
+          activeTheme={activeTheme}
         />
       );
     }

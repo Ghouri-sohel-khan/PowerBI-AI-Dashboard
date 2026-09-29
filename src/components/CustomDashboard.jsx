@@ -33,7 +33,6 @@ import {
   AlertCircle,
   X,
   Printer,
-  Palette,
   Maximize2,
   ArrowUpDown,
   ArrowUp,
@@ -118,163 +117,12 @@ function getSetupStorageKey(dataset) {
   return `dashboard_setup_${safeSlug}`;
 }
 
-/**
- * Centralized Dashboard Theme Preset Tokens (Phase 25)
- */
-const THEME_PRESETS = {
-  'Midnight Indigo': {
-    id: 'Midnight Indigo',
-    name: 'Midnight Indigo',
-    isDark: true,
-    swatch: { bg: '#0f172a', card: '#1e293b', accent: '#6366f1' },
-    bgClass: 'bg-slate-950 text-slate-100',
-    cardBg: 'bg-slate-900/95 border-slate-800',
-    cardHeaderBorder: 'border-slate-800',
-    panelBg: 'bg-slate-900/95 border-slate-800',
-    panelSectionBg: 'bg-slate-950/60 border-slate-800',
-    inputBg: 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500 focus:border-indigo-500',
-    buttonSecondaryBg: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700',
-    accentText: 'text-indigo-400',
-    accentBg: 'bg-indigo-950/60 border-indigo-800/60 text-indigo-300',
-    kpiBorder: 'border-slate-800 hover:border-indigo-500/50',
-    kpiGlow: 'shadow-indigo-500/5',
-    tableHeaderBg: 'bg-slate-800/80 text-slate-200 border-slate-700',
-    tableRowEven: 'bg-slate-900/60',
-    tableRowOdd: 'bg-slate-800/20',
-    tableRowHover: 'hover:bg-slate-800/60',
-    tableBorder: 'border-slate-800',
-    tableDivide: 'divide-slate-800',
-    mutedText: 'text-slate-400',
-    subtleText: 'text-slate-300',
-    headerText: 'text-white',
-    chartGrid: '#334155',
-    chartAxis: '#94a3b8',
-    chartTooltipBg: '#1e293b',
-    chartTooltipBorder: '#475569',
-    chartTooltipText: '#ffffff',
-    barFill: '#6366f1',
-    lineStroke: '#818cf8',
-    piePalette: ['#6366f1', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6']
-  },
-  'Ocean Blue': {
-    id: 'Ocean Blue',
-    name: 'Ocean Blue',
-    isDark: true,
-    swatch: { bg: '#0b192c', card: '#1e2e4a', accent: '#06b6d4' },
-    bgClass: 'bg-[#070f1e] text-slate-100',
-    cardBg: 'bg-[#0f1d33]/95 border-[#1e304d]',
-    cardHeaderBorder: 'border-[#1e304d]',
-    panelBg: 'bg-[#0f1d33]/95 border-[#1e304d]',
-    panelSectionBg: 'bg-[#081326]/60 border-[#1e304d]',
-    inputBg: 'bg-[#0b182d] border-[#1e355b] text-slate-100 placeholder-slate-500 focus:border-cyan-500',
-    buttonSecondaryBg: 'bg-[#182945] hover:bg-[#20365b] text-slate-200 border-[#243d66]',
-    accentText: 'text-cyan-400',
-    accentBg: 'bg-cyan-950/60 border-cyan-800/60 text-cyan-300',
-    kpiBorder: 'border-[#1e304d] hover:border-cyan-500/50',
-    kpiGlow: 'shadow-cyan-500/5',
-    tableHeaderBg: 'bg-[#162744] text-slate-200 border-[#20375d]',
-    tableRowEven: 'bg-[#0d1a2f]',
-    tableRowOdd: 'bg-[#13223d]',
-    tableRowHover: 'hover:bg-[#1b2f52]',
-    tableBorder: 'border-[#1e304d]',
-    tableDivide: 'divide-[#1e304d]',
-    mutedText: 'text-cyan-200/60',
-    subtleText: 'text-slate-300',
-    headerText: 'text-white',
-    chartGrid: '#1e355b',
-    chartAxis: '#7dd3fc',
-    chartTooltipBg: '#091427',
-    chartTooltipBorder: '#1e355b',
-    chartTooltipText: '#f0f9ff',
-    barFill: '#0284c7',
-    lineStroke: '#38bdf8',
-    piePalette: ['#0284c7', '#06b6d4', '#3b82f6', '#0d9488', '#f59e0b', '#6366f1', '#14b8a6', '#38bdf8']
-  },
-  'Emerald Graphite': {
-    id: 'Emerald Graphite',
-    name: 'Emerald Graphite',
-    isDark: true,
-    swatch: { bg: '#121816', card: '#1c2421', accent: '#10b981' },
-    bgClass: 'bg-[#0d1210] text-emerald-50',
-    cardBg: 'bg-[#161e1b]/95 border-[#23312c]',
-    cardHeaderBorder: 'border-[#23312c]',
-    panelBg: 'bg-[#161e1b]/95 border-[#23312c]',
-    panelSectionBg: 'bg-[#0e1412]/60 border-[#23312c]',
-    inputBg: 'bg-[#101714] border-[#253630] text-emerald-50 placeholder-emerald-700/60 focus:border-emerald-500',
-    buttonSecondaryBg: 'bg-[#1d2925] hover:bg-[#273832] text-emerald-100 border-[#2c3f38]',
-    accentText: 'text-emerald-400',
-    accentBg: 'bg-emerald-950/60 border-emerald-800/60 text-emerald-300',
-    kpiBorder: 'border-[#23312c] hover:border-emerald-500/50',
-    kpiGlow: 'shadow-emerald-500/5',
-    tableHeaderBg: 'bg-[#1e2c27] text-emerald-100 border-[#2a3e37]',
-    tableRowEven: 'bg-[#121a17]',
-    tableRowOdd: 'bg-[#18231f]',
-    tableRowHover: 'hover:bg-[#202f2a]',
-    tableBorder: 'border-[#23312c]',
-    tableDivide: 'divide-[#23312c]',
-    mutedText: 'text-emerald-300/60',
-    subtleText: 'text-emerald-200/80',
-    headerText: 'text-white',
-    chartGrid: '#253630',
-    chartAxis: '#6ee7b7',
-    chartTooltipBg: '#0b110f',
-    chartTooltipBorder: '#253630',
-    chartTooltipText: '#ecfdf5',
-    barFill: '#059669',
-    lineStroke: '#34d399',
-    piePalette: ['#059669', '#0d9488', '#10b981', '#06b6d4', '#84cc16', '#3b82f6', '#f59e0b', '#2dd4bf']
-  },
-  'Pearl Light': {
-    id: 'Pearl Light',
-    name: 'Pearl Light',
-    isDark: false,
-    swatch: { bg: '#f8fafc', card: '#ffffff', accent: '#4f46e5' },
-    bgClass: 'bg-slate-50 text-slate-900',
-    cardBg: 'bg-white border-slate-200 shadow-xs',
-    cardHeaderBorder: 'border-slate-100',
-    panelBg: 'bg-white/95 border-slate-200 shadow-xs',
-    panelSectionBg: 'bg-slate-50/80 border-slate-200/80',
-    inputBg: 'bg-white border-slate-300 text-slate-900 focus:border-indigo-500',
-    buttonSecondaryBg: 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300',
-    accentText: 'text-indigo-600',
-    accentBg: 'bg-indigo-50 border-indigo-100 text-indigo-700',
-    kpiBorder: 'border-slate-200 hover:border-indigo-400',
-    kpiGlow: 'shadow-slate-200/50',
-    tableHeaderBg: 'bg-slate-100 text-slate-700 border-slate-200',
-    tableRowEven: 'bg-white',
-    tableRowOdd: 'bg-slate-50/50',
-    tableRowHover: 'hover:bg-slate-100/70',
-    tableBorder: 'border-slate-200',
-    tableDivide: 'divide-slate-200',
-    mutedText: 'text-slate-500',
-    subtleText: 'text-slate-600',
-    headerText: 'text-slate-900',
-    chartGrid: '#e2e8f0',
-    chartAxis: '#64748b',
-    chartTooltipBg: '#ffffff',
-    chartTooltipBorder: '#cbd5e1',
-    chartTooltipText: '#0f172a',
-    barFill: '#4f46e5',
-    lineStroke: '#6366f1',
-    piePalette: ['#4f46e5', '#0284c7', '#0d9488', '#16a34a', '#d97706', '#db2777', '#7c3aed', '#2563eb']
-  }
-};
-
-/**
- * Validate and migrate saved theme preferences
- */
-function getValidatedTheme(savedValue) {
-  if (!savedValue) return 'Midnight Indigo';
-  if (savedValue === 'light') return 'Pearl Light';
-  if (savedValue === 'dark') return 'Midnight Indigo';
-  if (THEME_PRESETS[savedValue]) return savedValue;
-  return 'Midnight Indigo';
-}
+import { THEME_PRESETS, getValidatedTheme } from '../utils/themePresets';
 
 /**
  * Custom Data-Driven Dashboard for Parsed Spreadsheets (Phase 3)
  */
-export default function CustomDashboard({ dataset, onBackToPreview }) {
+export default function CustomDashboard({ dataset, onBackToPreview, _onSelectWorksheet, themeId, _onThemeChange, activeTheme }) {
   // Sensitive values reveal state (memory-only in React state, default: Hidden)
   const [showSensitiveValues, setShowSensitiveValues] = useState(false);
 
@@ -446,30 +294,7 @@ export default function CustomDashboard({ dataset, onBackToPreview }) {
     setCurrentPage(1);
   };
 
-  // Dashboard Theme Preference State (Restored from localStorage, defaults to 'Midnight Indigo')
-  const [theme, setTheme] = useState(() => {
-    try {
-      const saved = localStorage.getItem('dashboard_theme_preference');
-      return getValidatedTheme(saved);
-    } catch (err) {
-      console.warn('Failed to read theme preference from localStorage:', err);
-      return 'Midnight Indigo';
-    }
-  });
-
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
-
-  const selectTheme = (themeId) => {
-    const validTheme = getValidatedTheme(themeId);
-    setTheme(validTheme);
-    try {
-      localStorage.setItem('dashboard_theme_preference', validTheme);
-    } catch (e) {
-      console.warn('Failed to persist theme preference:', e);
-    }
-  };
-
-  const t = THEME_PRESETS[theme] || THEME_PRESETS['Midnight Indigo'];
+  const t = activeTheme || THEME_PRESETS[getValidatedTheme(themeId)] || THEME_PRESETS['Pearl Light'];
   const isDark = t.isDark;
 
   // LocalStorage Dashboard Setup Initial Check
@@ -1366,80 +1191,8 @@ export default function CustomDashboard({ dataset, onBackToPreview }) {
               {showSensitiveValues ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5 text-indigo-500" />}
               <span>Sensitive values: {showSensitiveValues ? 'Shown' : 'Hidden'}</span>
               <span className="font-bold underline ml-0.5">
-                {showSensitiveValues ? 'Hide values' : 'Show values'}
               </span>
             </button>
-
-            {/* Compact Appearance Theme Selection Menu */}
-            <div className="relative inline-block text-left">
-              <button
-                type="button"
-                id="appearance-menu-button"
-                onClick={() => setShowThemeMenu(prev => !prev)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors inline-flex items-center space-x-1.5 cursor-pointer border hover:scale-[1.01] active:scale-[0.99] ${t.buttonSecondaryBg}`}
-                aria-expanded={showThemeMenu}
-                aria-haspopup="true"
-                aria-label="Dashboard appearance theme selector"
-                title="Change Dashboard Appearance Theme"
-              >
-                <Palette className="w-3.5 h-3.5 text-indigo-400" />
-                <span className="hidden sm:inline">Appearance:</span>
-                <span className="font-bold">{t.name}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showThemeMenu ? 'rotate-180' : ''}`} />
-              </button>
-
-              {showThemeMenu && (
-                <>
-                  {/* Backdrop overlay for closing dropdown on click outside */}
-                  <div 
-                    className="fixed inset-0 z-40" 
-                    onClick={() => setShowThemeMenu(false)} 
-                  />
-
-                  <div 
-                    className={`absolute right-0 mt-2 w-56 rounded-2xl shadow-xl border z-50 p-2 space-y-1 ${t.panelBg}`}
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="appearance-menu-button"
-                  >
-                    <div className={`px-2.5 py-1.5 text-[10px] font-extrabold uppercase tracking-wider ${t.mutedText}`}>
-                      Theme Presets
-                    </div>
-                    {Object.values(THEME_PRESETS).map((preset) => {
-                      const isSelected = theme === preset.id;
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            selectTheme(preset.id);
-                            setShowThemeMenu(false);
-                          }}
-                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between cursor-pointer ${
-                            isSelected 
-                              ? `${t.accentBg} font-bold shadow-xs`
-                              : `${t.buttonSecondaryBg} hover:opacity-90`
-                          }`}
-                          aria-label={`Select ${preset.name} theme`}
-                        >
-                          <div className="flex items-center space-x-2.5">
-                            {/* Color Swatch */}
-                            <div className="flex items-center space-x-1 p-1 bg-slate-950/20 rounded-md border border-slate-700/50 shrink-0">
-                              <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: preset.swatch.bg }} title="Background color" />
-                              <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: preset.swatch.card }} title="Card surface color" />
-                              <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: preset.swatch.accent }} title="Accent color" />
-                            </div>
-                            <span className={isSelected ? 'font-bold' : ''}>{preset.name}</span>
-                          </div>
-                          {isSelected && <Check className="w-4 h-4 text-emerald-400 shrink-0" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </div>
 
             <button
               type="button"

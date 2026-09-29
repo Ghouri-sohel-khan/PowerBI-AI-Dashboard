@@ -1,28 +1,47 @@
 import React, { useState, useRef } from 'react';
 import Header from './components/Header';
 import LandingScreen from './components/LandingScreen';
-import UploadScreen from './components/UploadScreen';
 import DataPreviewScreen from './components/DataPreviewScreen';
 import DashboardScreen from './components/DashboardScreen';
 import Footer from './components/Footer';
 import { parseSpreadsheetFile } from './utils/fileParser';
+import { THEME_PRESETS, getValidatedTheme } from './utils/themePresets';
 
 export default function App() {
-  const [currentStep, setCurrentStep] = useState('landing'); // 'landing' | 'upload' | 'preview' | 'dashboard'
+  const [currentStep, setCurrentStep] = useState('landing'); // 'landing' | 'preview' | 'dashboard'
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [isParsing, setIsParsing] = useState(false);
   const [parsingError, setParsingError] = useState(null);
   const [parseStatusText, setParseStatusText] = useState('Reading file…');
   const [lastUploadedFile, setLastUploadedFile] = useState(null);
 
+  // Global Theme Preference State
+  const [themeId, setThemeId] = useState(() => {
+    try {
+      const saved = localStorage.getItem('dashboard_theme_preference');
+      return getValidatedTheme(saved);
+    } catch {
+      return 'Pearl Light';
+    }
+  });
+
+  const handleThemeChange = (newThemeId) => {
+    const validTheme = getValidatedTheme(newThemeId);
+    setThemeId(validTheme);
+    try {
+      localStorage.setItem('dashboard_theme_preference', validTheme);
+    } catch (e) {
+      console.warn('Failed to persist theme preference:', e);
+    }
+  };
+
+  const activeTheme = THEME_PRESETS[themeId] || THEME_PRESETS['Pearl Light'];
+
   // Sequence token ref to prevent race conditions when multiple files are uploaded rapidly
   const uploadSeqRef = useRef(0);
+  const fileInputRef = useRef(null);
   
-  // Enter workspace from landing screen
-  const handleEnterWorkspace = () => {
-    setCurrentStep('upload');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+
 
   const handleSelectDataset = (dataset) => {
     setParsingError(null);
@@ -149,27 +168,27 @@ export default function App() {
     if (isParsing) return;
     setSelectedDataset(null);
     setParsingError(null);
-    setCurrentStep('upload');
+    setCurrentStep('landing');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-app-pattern text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className={`min-h-screen ${activeTheme.bgClass} flex flex-col font-sans selection:bg-indigo-500 selection:text-white transition-colors duration-200`}>
       <Header 
         currentStep={currentStep} 
         setCurrentStep={(step) => !isParsing && setCurrentStep(step)}
         selectedDataset={selectedDataset}
         onReset={handleReset}
         isParsing={isParsing}
+        fileInputRef={fileInputRef}
+        themeId={themeId}
+        onThemeChange={handleThemeChange}
+        activeTheme={activeTheme}
       />
 
       <main className="flex-1">
         {currentStep === 'landing' && (
-          <LandingScreen onEnterWorkspace={handleEnterWorkspace} />
-        )}
-
-        {currentStep === 'upload' && (
-          <UploadScreen 
+          <LandingScreen 
             onSelectDataset={handleSelectDataset}
             onCustomFileUpload={handleCustomFileUpload}
             isParsing={isParsing}
@@ -178,6 +197,8 @@ export default function App() {
             lastUploadedFile={lastUploadedFile}
             onRetry={handleRetryLastFile}
             clearError={() => setParsingError(null)}
+            fileInputRef={fileInputRef}
+            activeTheme={activeTheme}
           />
         )}
 
@@ -188,6 +209,7 @@ export default function App() {
             onBack={handleReset}
             onSelectWorksheet={handleSelectWorksheet}
             onSelectHeaderRow={handleSelectHeaderRow}
+            activeTheme={activeTheme}
           />
         )}
 
@@ -197,11 +219,14 @@ export default function App() {
             onChangeDataset={(newDataset) => setSelectedDataset(newDataset)}
             onBackToPreview={() => setCurrentStep('preview')}
             onSelectWorksheet={handleSelectWorksheet}
+            themeId={themeId}
+            onThemeChange={handleThemeChange}
+            activeTheme={activeTheme}
           />
         )}
       </main>
 
-      <Footer />
+      <Footer activeTheme={activeTheme} />
     </div>
   );
 }

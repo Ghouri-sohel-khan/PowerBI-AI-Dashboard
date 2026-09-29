@@ -34,7 +34,7 @@ const ICON_MAP = {
   FileText: FileText,
 };
 
-export default function DataPreviewScreen({ dataset, onContinue, onBack, onSelectWorksheet, onSelectHeaderRow }) {
+export default function DataPreviewScreen({ dataset, onContinue, onBack, onSelectWorksheet, onSelectHeaderRow, _activeTheme }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;

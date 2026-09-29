@@ -224,10 +224,42 @@
   .animate-landing-float-delayed,
   .animate-bar-1,
   .animate-bar-2,
-  .animate-bar-3 {
+  .animate-bar-3,
+  .animate-console-scan,
+  .animate-console-pulse {
     animation: none !important;
     transition: none !important;
+    transform: none !important;
+    opacity: 0.3 !important;
   }
+}
+
+/* Phase 30: AI Data Intake Console Visual Effects */
+.console-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+@keyframes consoleScan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  30% { opacity: 0.35; }
+  70% { opacity: 0.35; }
+  100% { transform: translateY(300%); opacity: 0; }
+}
+
+@keyframes consolePulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.15); }
+}
+
+.animate-console-scan {
+  animation: consoleScan 7s ease-in-out infinite;
+}
+
+.animate-console-pulse {
+  animation: consolePulse 3s ease-in-out infinite;
 }
 
 /* Custom Dashboard Motion & Micro-Interactions (Phase 28) */

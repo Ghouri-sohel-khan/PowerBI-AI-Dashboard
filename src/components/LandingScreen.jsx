@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   ArrowRight, 
   FileSpreadsheet, 
@@ -16,27 +16,102 @@ import {
   Maximize2, 
   CheckCircle2, 
   Layers,
-  ChevronRight
+  ChevronRight,
+  UploadCloud,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
+import { SAMPLE_DATASETS } from '../data/sampleDatasets';
 
-export default function LandingScreen({ onEnterWorkspace }) {
-  const handleScrollToFeatures = (e) => {
-    e.preventDefault();
-    const elem = document.getElementById('features');
+export default function LandingScreen({ 
+  onSelectDataset, 
+  onCustomFileUpload, 
+  isParsing, 
+  parseStatusText, 
+  parsingError, 
+  lastUploadedFile, 
+  onRetry, 
+  clearError,
+  fileInputRef,
+  activeTheme
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragError, setDragError] = useState(null);
+  const internalRef = useRef(null);
+  const activeFileInputRef = fileInputRef || internalRef;
+
+  const handleScrollToSamples = (e) => {
+    if (e) e.preventDefault();
+    const elem = document.getElementById('samples');
     if (elem) {
       elem.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (isParsing) return;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const processFile = (file) => {
+    if (isParsing) return;
+    setDragError(null);
+    if (clearError) clearError();
+    if (!file) return;
+
+    const validExtensions = ['.csv', '.xlsx', '.xls'];
+    const fileName = file.name.toLowerCase();
+    const isValid = validExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!isValid) {
+      setDragError('Unsupported file format. Please upload a .csv, .xlsx, or .xls file.');
+      return;
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      setDragError(`File size (${sizeMB} MB) exceeds maximum 25 MB limit.`);
+      return;
+    }
+
+    onCustomFileUpload(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (isParsing) return;
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (isParsing) return;
+    if (e.target.files && e.target.files[0]) {
+      processFile(e.target.files[0]);
+    }
+    e.target.value = '';
+  };
+
+  const displayError = parsingError || dragError;
+  const statusMessage = parseStatusText || 'Reading file…';
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white relative overflow-hidden font-sans">
+    <div className={`min-h-screen ${activeTheme?.bgClass || 'bg-slate-950 text-slate-100'} selection:bg-indigo-500 selection:text-white relative overflow-hidden font-sans transition-colors duration-200`}>
       {/* Dynamic Midnight Background Glows */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-3xl pointer-events-none animate-landing-glow" />
       <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-3xl pointer-events-none animate-landing-glow" />
       <div className="absolute bottom-10 left-1/3 w-[550px] h-[550px] bg-teal-600/10 rounded-full blur-3xl pointer-events-none animate-landing-glow" />
 
       {/* Hero Section */}
-      <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="relative pt-12 pb-14 md:pt-16 md:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Hero Text Content */}
@@ -57,26 +132,143 @@ export default function LandingScreen({ onEnterWorkspace }) {
               Upload CSV or Excel workbooks, inspect raw column structures, configure custom KPI aggregations, and explore rich visual charts—all processed safely inside your local browser.
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <button
-                onClick={onEnterWorkspace}
-                className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-500 hover:from-indigo-500 hover:to-teal-400 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2.5 group cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
+            {/* Premium AI Data Intake Console */}
+            <div className="pt-2">
+              <div 
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`relative overflow-hidden rounded-2xl p-5 sm:p-6 transition-all duration-300 border ${
+                  isParsing
+                    ? 'bg-indigo-950/60 border-indigo-500/50 shadow-xl shadow-indigo-500/10 cursor-wait'
+                    : isDragging 
+                    ? 'bg-indigo-950/80 border-indigo-400 scale-[1.01] shadow-2xl shadow-indigo-500/30' 
+                    : 'bg-slate-900/90 border-slate-800/90 hover:border-indigo-500/40 shadow-xl backdrop-blur-xl'
+                }`}
               >
-                <span>Build Your Dashboard</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+                {/* Low-contrast Console Digital Grid Overlay */}
+                <div className="absolute inset-0 console-grid-pattern opacity-40 pointer-events-none" />
 
-              <a
-                href="#features"
-                onClick={handleScrollToFeatures}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-sm border border-slate-800 hover:border-slate-700 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
-              >
-                <span>Explore Features</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </a>
+                {/* Subtle CSS Scanning Glow Line */}
+                <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-indigo-500/10 via-teal-500/5 to-transparent pointer-events-none animate-console-scan" />
+
+                {/* Hidden Native File Input */}
+                <input
+                  type="file"
+                  ref={activeFileInputRef}
+                  onChange={handleFileChange}
+                  accept=".csv, .xlsx, .xls"
+                  className="hidden"
+                  disabled={isParsing}
+                />
+
+                {/* Panel Content */}
+                <div className="relative z-10 space-y-4">
+                  
+                  {/* Console Header Bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75 animate-console-pulse" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500" />
+                      </span>
+                      <span className="text-[11px] font-mono font-extrabold uppercase tracking-wider text-indigo-300">
+                        DATA INTAKE CONSOLE
+                      </span>
+                    </div>
+
+                    {/* Format Chips */}
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono">
+                      <span className="px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700/80">CSV</span>
+                      <span className="px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700/80">XLSX</span>
+                      <span className="px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700/80">XLS</span>
+                    </div>
+                  </div>
+
+                  {/* Main Console Body */}
+                  <div className="space-y-1 text-left">
+                    <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      {isDragging ? 'Drop file to inspect data' : 'Upload your spreadsheet'}
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      CSV, XLSX, or XLS • Processed locally in your browser
+                    </p>
+                  </div>
+
+                  {/* Primary & Secondary Action Row */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+                    <button
+                      type="button"
+                      disabled={isParsing}
+                      onClick={() => !isParsing && activeFileInputRef.current?.click()}
+                      className="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-500 hover:from-indigo-500 hover:to-teal-400 text-white font-bold text-xs sm:text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2.5 group cursor-pointer disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
+                    >
+                      {isParsing ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      ) : (
+                        <UploadCloud className="w-4 h-4" />
+                      )}
+                      <span>{isParsing ? statusMessage : 'Browse File'}</span>
+                    </button>
+
+                    <a
+                      href="#samples"
+                      onClick={handleScrollToSamples}
+                      className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-xs sm:text-sm border border-slate-700/80 transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
+                    >
+                      <span>Try a demo dataset</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                    </a>
+                  </div>
+
+                  {/* Privacy Badge Footer inside panel */}
+                  <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                    <span className="flex items-center gap-1.5 text-teal-400 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Local processing • No cloud upload</span>
+                    </span>
+                    <span className="hidden sm:inline-block text-slate-500 font-mono text-[10px]">
+                      PapaParse & SheetJS Engine
+                    </span>
+                  </div>
+
+                  {/* Inline Parsing Error / Retry Controls */}
+                  {displayError && (
+                    <div className="mt-3 p-3 rounded-xl bg-rose-950/80 border border-rose-800/80 text-rose-200 text-xs font-medium flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span>{displayError}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                        {lastUploadedFile && onRetry && (
+                          <button
+                            type="button"
+                            onClick={onRetry}
+                            className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold shrink-0 cursor-pointer"
+                          >
+                            Retry File
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (clearError) clearError();
+                            setDragError(null);
+                            activeFileInputRef.current?.click();
+                          }}
+                          className="px-2.5 py-1 bg-slate-900 border border-rose-700/80 hover:bg-slate-800 text-rose-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                        >
+                          Choose Another File
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
             </div>
 
-            <div className="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
+            <div className="pt-2 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-teal-400" /> No server uploads
               </span>
@@ -163,6 +355,63 @@ export default function LandingScreen({ onEnterWorkspace }) {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* Sample Datasets Section */}
+      <section id="samples" className="relative py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-16 border-t border-slate-800/80">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800/80 pb-3 gap-2">
+            <div>
+              <h3 className="text-lg font-extrabold text-white tracking-tight">Try a Sample Dataset</h3>
+              <p className="text-xs text-slate-400">Select a pre-loaded sample spreadsheet to immediately preview data and explore the dashboard workspace</p>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-950/80 text-indigo-300 border border-indigo-800/80 rounded-lg self-start sm:self-auto">
+              3 Sample Spreadsheets Ready
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Object.values(SAMPLE_DATASETS).map((dataset) => (
+              <div
+                key={dataset.id}
+                onClick={() => !isParsing && onSelectDataset(dataset)}
+                className={`bg-slate-900/80 border border-slate-800 rounded-2xl p-5 transition-all duration-200 flex flex-col justify-between group shadow-lg ${
+                  isParsing ? 'opacity-50 cursor-not-allowed' : 'hover:border-indigo-500/60 hover:bg-slate-900 cursor-pointer hover:-translate-y-0.5'
+                }`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 bg-slate-800 text-slate-300 rounded-md border border-slate-700">
+                      {dataset.category}
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-mono">
+                      {dataset.fileSize}
+                    </span>
+                  </div>
+
+                  <h4 className="font-bold text-white group-hover:text-indigo-300 transition-colors flex items-center justify-between tracking-tight text-sm">
+                    <span>{dataset.displayName}</span>
+                  </h4>
+
+                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                    {dataset.description}
+                  </p>
+
+                  <div className="flex items-center space-x-3 text-xs font-mono text-slate-400 pt-2 border-t border-slate-800/80">
+                    <span>{dataset.rowCount.toLocaleString()} rows</span>
+                    <span>•</span>
+                    <span>{dataset.columnCount} columns</span>
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-indigo-400 group-hover:translate-x-0.5 transition-transform">
+                  <span>Load Sample & Inspect</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -407,11 +656,13 @@ export default function LandingScreen({ onEnterWorkspace }) {
 
           <div className="pt-2">
             <button
-              onClick={onEnterWorkspace}
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-500 hover:from-indigo-500 hover:to-teal-400 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] inline-flex items-center justify-center gap-2.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
+              type="button"
+              disabled={isParsing}
+              onClick={() => !isParsing && activeFileInputRef.current?.click()}
+              className="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-teal-500 hover:from-indigo-500 hover:to-teal-400 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
             >
-              <span>Open Dashboard Workspace</span>
-              <ArrowRight className="w-4 h-4" />
+              <UploadCloud className="w-4 h-4" />
+              <span>Browse File</span>
             </button>
           </div>
         </div>
